@@ -1,7 +1,7 @@
 /*
 Inspired by Nobuild project created by Alexey Kutepov and released under MIT license.
 https://github.com/tsoding/nobuild
-I took some concepts from it.
+I took some concepts from it and adapted for my cases.
 This library is created to be used in personal projects.
 TODO:
     1. String types.
