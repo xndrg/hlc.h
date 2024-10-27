@@ -31,34 +31,32 @@ typedef struct {
     size_t size;
 } Hlc_File_Buffer;
 
-bool hlc_read_file(const char *file_path, Hlc_File_Buffer *str);
+Hlc_File_Buffer hlc_read_entire_file(const char *file_path);
 #define hlc_fb_free(fb) free((fb).data)
 
 #ifdef HLC_IMPLEMENTATION
 
-bool hlc_read_file(const char *file_path, Hlc_File_Buffer *str)
+Hlc_File_Buffer hlc_read_entire_file(const char *file_path)
 {
-    bool result = true;
+    Hlc_File_Buffer fb = {0};
 
     FILE *f = fopen(file_path, "rb");
-    if (f == NULL)                 hlc_return_defer(false);
-    if (fseek(f, 0, SEEK_END) < 0) hlc_return_defer(false);
-    long m = ftell(f);
-    if (m < 0)                     hlc_return_defer(false);
-    if (fseek(f, 0, SEEK_SET) < 0) hlc_return_defer(false);
+    if (f == NULL)                 goto defer;
+    if (fseek(f, 0, SEEK_END) < 0) goto defer;
+    fb.size = ftell(f);
+    if (fb.size < 0)               goto defer;
+    if (fseek(f, 0, SEEK_SET) < 0) goto defer;
 
-    size_t len = m;
-    str->data = malloc(sizeof(char) * len);
-    assert(str->data != NULL && "Buy more RAM lool!!");
+    fb.data = malloc(fb.size + 1);
+    assert(fb.data != NULL && "Buy more RAM lool!!");
 
-    fread(str->data, m, 1, f);
-    if (ferror(f))                 hlc_return_defer(false);
-    str->size = len;
+    fread(fb.data, fb.size, 1, f);
+    if (ferror(f))                 goto defer;
+    fb.data[fb.size] = '\0';
 
 defer:
-    if (!result) fprintf(stderr, "Could not read file %s: %s", file_path, strerror(errno));
     if (f) fclose(f);
-    return result;
+    return fb;
 }
 
 #endif // HLC_IMPLEMENTATION
