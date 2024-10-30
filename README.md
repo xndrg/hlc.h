@@ -18,3 +18,6 @@ The only thing you need is a copy of `hlc.h`.
 # Examples
 
 You can find few code examples directly in [hlc.h](https://github.com/xndrg/hlc.h/blob/main/hlc.h).
+
+# TODO
+[ ] Associative array (HashMap)
