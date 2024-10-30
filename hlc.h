@@ -41,7 +41,9 @@ int main(void)
     printf("Read %zu bytes\n", fb.size);
     // File buffer is null-terminated
     printf("%s\n", fb.data);
-    
+
+    // Free memory after use
+    fb_free(fb);
     return 0;
 }
 */
@@ -110,29 +112,29 @@ int main(void)
 
 #define da_append(da, item)                                                     \
     do {                                                                        \
-	if ((da)->len >= (da)->cap) {                                           \
-	    (da)->cap = (da)->cap == 0 ? DA_INIT_CAP : (da)->cap*2;             \
-	    (da)->items = realloc((da)->items, (da)->cap*sizeof(*(da)->items)); \
-	    assert((da)->items != NULL && "Buy more RAM lool!!");               \
-	}                                                                       \
+        if ((da)->len >= (da)->cap) {                                           \
+            (da)->cap = (da)->cap == 0 ? DA_INIT_CAP : (da)->cap*2;             \
+            (da)->items = realloc((da)->items, (da)->cap*sizeof(*(da)->items)); \
+            assert((da)->items != NULL && "Buy more RAM lool!!");               \
+        }                                                                       \
                                                                                 \
-	(da)->items[(da)->len++] = (item);                                      \
+        (da)->items[(da)->len++] = (item);                                      \
     } while(0)
 
 #define da_append_many(da, new_items, new_items_count)                                        \
     do {                                                                                      \
-	if ((da)->len + (new_items_count) > (da)->cap) {                                      \
-	    if ((da)->cap == 0) {                                                             \
-		(da)->cap = DA_INIT_CAP;                                                      \
-	    }                                                                                 \
-	    while ((da)->len + (new_items_count) > (da)->cap) {                               \
-		(da)->cap *= 2;                                                               \
-	    }                                                                                 \
-	    (da)->items = realloc((da)->items, (da)->cap*sizeof(*(da)->items));               \
-	    assert((da)->items != NULL && "Buy more RAM lool!!");                             \
-	}                                                                                     \
-	memcpy((da)->items + (da)->len, (new_items), (new_items_count)*sizeof(*(da)->items)); \
-	(da)->len += (new_items_count);                                                       \
+        if ((da)->len + (new_items_count) > (da)->cap) {                                      \
+            if ((da)->cap == 0) {                                                             \
+                (da)->cap = DA_INIT_CAP;                                                      \
+            }                                                                                 \
+            while ((da)->len + (new_items_count) > (da)->cap) {                               \
+                (da)->cap *= 2;                                                               \
+            }                                                                                 \
+            (da)->items = realloc((da)->items, (da)->cap*sizeof(*(da)->items));               \
+            assert((da)->items != NULL && "Buy more RAM lool!!");                             \
+        }                                                                                     \
+        memcpy((da)->items + (da)->len, (new_items), (new_items_count)*sizeof(*(da)->items)); \
+        (da)->len += (new_items_count);                                                       \
     } while(0)
 
 #ifdef HLC_IMPLEMENTATION
@@ -163,15 +165,15 @@ defer:
 String_View sv_new(const char *data, size_t size)
 {
     return (String_View) {
-	.data = data,
-	.size = size,
+        .data = data,
+        .size = size,
     };
 }
 
 bool sv_equals(const String_View a, const String_View b)
 {
     if (a.size != b.size) {
-	return false;
+        return false;
     }
 
     return memcmp(a.data, b.data, a.size) == 0;
@@ -180,7 +182,7 @@ bool sv_equals(const String_View a, const String_View b)
 bool sv_has_prefix(String_View sv, String_View prefix)
 {
     if (sv.size < prefix.size) {
-	return false;
+        return false;
     }
 
     String_View substr = sv_new(sv.data, prefix.size);
@@ -190,7 +192,7 @@ bool sv_has_prefix(String_View sv, String_View prefix)
 String_View sv_chop(String_View *sv, size_t n)
 {
     if (sv->size < n) {
-	sv->size = n;
+        sv->size = n;
     }
 
     String_View result = sv_new(sv->data, n);
@@ -204,7 +206,7 @@ String_View sv_chop(String_View *sv, size_t n)
 String_View sv_chop_prefix(String_View *sv, String_View prefix)
 {
     if (!sv_has_prefix(*sv, prefix)) {
-	return sv_new(NULL, 0);
+        return sv_new(NULL, 0);
     }
 
     return sv_chop(sv, prefix.size);
@@ -215,7 +217,7 @@ String_View sv_chop_while(String_View *sv, String_View_Predicate predicate)
     size_t i = 0;
     
     while (i < sv->size && predicate(sv->data[i])) {
-	i += 1;
+        i += 1;
     }
 
     return sv_chop(sv, i);
