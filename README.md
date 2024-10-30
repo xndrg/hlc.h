@@ -1,8 +1,8 @@
 # hlc.h
 
 Inspired by [Nobuild project](https://github.com/tsoding/nobuil) created by [Alexey Kutepov](https://github.com/rexim/) and released under MIT license.\
-I took some concepts from it and adapted for my cases.
-This library is created to be used in personal projects.
+I took some concepts from it and adapted for my cases.\
+This library is created to be used in personal projects.\
 Work in progress
 
 # Using
