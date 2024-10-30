@@ -49,7 +49,7 @@ bool        sv_has_prefix(String_View sv, String_View prefix);
 String_View sv_chop(String_View *sv, size_t n);
 String_View sv_chop_prefix(String_View *sv, String_View prefix);
 String_View sv_chop_while(String_View *sv, String_View_Predicate predicate);
-bool sv_is_alpha(const char c);
+bool        sv_is_alpha(const char c);
 
 #ifdef HLC_IMPLEMENTATION
 
