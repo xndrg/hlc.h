@@ -20,4 +20,4 @@ The only thing you need is a copy of `hlc.h`.
 You can find few code examples directly in [hlc.h](https://github.com/xndrg/hlc.h/blob/main/hlc.h).
 
 # TODO
-[ ] Associative array (HashMap)
+- [ ] Implement [Associative array](https://en.wikipedia.org/wiki/Associative_array) (HashMap)
