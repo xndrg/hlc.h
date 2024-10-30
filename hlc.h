@@ -3,13 +3,11 @@ Inspired by Nobuild project created by Alexey Kutepov and released under MIT lic
 https://github.com/tsoding/nobuild
 I took some concepts from it and adapted for my cases.
 This library is created to be used in personal projects.
-TODO:
-    1. String types.
-    2. Basic data structures (Dynamic array, Associative array)
 */
 #ifndef HLC_H_
 #define HLC_H_
 
+#include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -27,6 +25,26 @@ typedef struct {
     char  *data;
     size_t size;
 } File_Buffer;
+
+/*
+// Example of reading content from file using File_Buffer
+#include <stdio.h>
+
+#define HLC_IMPLEMENTATION
+#include "hlc.h"
+
+int main(void)
+{
+    const char *file_path = "hello.bf";
+    File_Buffer fb = read_entire_file(file_path);
+
+    printf("Read %zu bytes\n", fb.size);
+    // File buffer is null-terminated
+    printf("%s\n", fb.data);
+    
+    return 0;
+}
+*/
 
 File_Buffer read_entire_file(const char *file_path);
 #define fb_free(fb) free((fb).data)
@@ -50,6 +68,72 @@ String_View sv_chop(String_View *sv, size_t n);
 String_View sv_chop_prefix(String_View *sv, String_View prefix);
 String_View sv_chop_while(String_View *sv, String_View_Predicate predicate);
 bool        sv_is_alpha(const char c);
+
+#ifndef DA_INIT_CAP
+#define DA_INIT_CAP 256
+#endif
+
+/*
+// Example of defining and using dynamic array
+#include <stdio.h>
+
+#define HLC_IMPLEMENTATION
+#include "hlc.h"
+
+typedef struct {
+    int *items;
+    size_t len;
+    size_t cap;
+} Nums;
+
+int main(void)
+{
+    Nums nums = {0};
+
+    da_append(&nums, 1);
+    da_append(&nums, 2);
+    da_append(&nums, 3);
+
+    int many[] = {4, 5, 6, 7, 8, 9};
+    da_append_many(&nums, many, sizeof(many)/sizeof(many[0]));
+    for (int i = 0; i < nums.len; ++i) {
+	printf("%d ", nums.items[i]);
+    }
+
+    // Free memory after use
+    da_free(nums);
+    return 0;
+}
+*/
+
+#define da_free(da) free((da).items)
+
+#define da_append(da, item)                                                     \
+    do {                                                                        \
+	if ((da)->len >= (da)->cap) {                                           \
+	    (da)->cap = (da)->cap == 0 ? DA_INIT_CAP : (da)->cap*2;             \
+	    (da)->items = realloc((da)->items, (da)->cap*sizeof(*(da)->items)); \
+	    assert((da)->items != NULL && "Buy more RAM lool!!");               \
+	}                                                                       \
+                                                                                \
+	(da)->items[(da)->len++] = (item);                                      \
+    } while(0)
+
+#define da_append_many(da, new_items, new_items_count)                                        \
+    do {                                                                                      \
+	if ((da)->len + (new_items_count) > (da)->cap) {                                      \
+	    if ((da)->cap == 0) {                                                             \
+		(da)->cap = DA_INIT_CAP;                                                      \
+	    }                                                                                 \
+	    while ((da)->len + (new_items_count) > (da)->cap) {                               \
+		(da)->cap *= 2;                                                               \
+	    }                                                                                 \
+	    (da)->items = realloc((da)->items, (da)->cap*sizeof(*(da)->items));               \
+	    assert((da)->items != NULL && "Buy more RAM lool!!");                             \
+	}                                                                                     \
+	memcpy((da)->items + (da)->len, (new_items), (new_items_count)*sizeof(*(da)->items)); \
+	(da)->len += (new_items_count);                                                       \
+    } while(0)
 
 #ifdef HLC_IMPLEMENTATION
 
