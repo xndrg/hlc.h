@@ -64,6 +64,7 @@ String_View sv_new(const char *data, size_t size);
 bool        sv_equals(const String_View a, const String_View b);
 bool        sv_has_prefix(String_View sv, String_View prefix);
 String_View sv_chop(String_View *sv, size_t n);
+String_View sv_chop_by_delim(String_View *sv, char delim);
 String_View sv_chop_prefix(String_View *sv, String_View prefix);
 String_View sv_chop_while(String_View *sv, String_View_Predicate predicate);
 bool        sv_is_alpha(const char c);
@@ -196,6 +197,27 @@ String_View sv_chop(String_View *sv, size_t n)
 
     sv->size = sv->size - n;
     sv->data = sv->data + n;
+
+    return result;
+}
+
+String_View sv_chop_by_delim(String_View *sv, char delim)
+{
+    size_t i = 0;
+
+    while (i < sv->size && sv->data[i] != delim) {
+	i += 1;
+    }
+
+    String_View result = sv_new(sv->data, i);
+
+    if (i < sv->size) {
+	sv->size -= i + 1;
+	sv->data  += i + 1;
+    } else {
+	sv->size -= i;
+	sv->data  += i;
+    }
 
     return result;
 }
