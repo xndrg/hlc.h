@@ -35,15 +35,12 @@ typedef struct {
 
 int main(void)
 {
-    const char *file_path = "hello.bf";
+    const char *file_path = "input.txt";
     File_Buffer fb = read_entire_file(file_path);
 
-    printf("Read %zu bytes\n", fb.size);
-    // File buffer is null-terminated
-    printf("%s\n", fb.data);
-
-    // Free memory after use
-    fb_free(fb);
+    printf("Read %zu bytes from %s\n", fb.size, file_path);
+    fwrite(fb.data, 1, fb.size, stdout);
+    
     return 0;
 }
 */
@@ -151,12 +148,11 @@ File_Buffer read_entire_file(const char *file_path)
     fb.size = (size_t) n;
     if (fseek(f, 0, SEEK_SET) < 0) goto defer;
 
-    fb.data = malloc(fb.size + 1);
+    fb.data = malloc(fb.size);
     assert(fb.data != NULL && "Buy more RAM lool!!");
 
     fread(fb.data, fb.size, 1, f);
     if (ferror(f))                 goto defer;
-    fb.data[fb.size] = '\0';
 
 defer:
     if (f) fclose(f);
