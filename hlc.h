@@ -146,8 +146,9 @@ File_Buffer read_entire_file(const char *file_path)
     FILE *f = fopen(file_path, "rb");
     if (f == NULL)                 goto defer;
     if (fseek(f, 0, SEEK_END) < 0) goto defer;
-    fb.size = ftell(f);
-    if (fb.size < 0)               goto defer;
+    long n = ftell(f);
+    if (n < 0)                     goto defer;
+    fb.size = (size_t) n;
     if (fseek(f, 0, SEEK_SET) < 0) goto defer;
 
     fb.data = malloc(fb.size + 1);
