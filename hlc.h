@@ -68,6 +68,7 @@ String_View sv_chop_by_delim(String_View *sv, char delim);
 String_View sv_chop_prefix(String_View *sv, String_View prefix);
 String_View sv_chop_while(String_View *sv, String_View_Predicate predicate);
 bool        sv_is_alpha(const char c);
+bool        sv_is_whitespace(const char c);
 
 #ifndef DA_INIT_CAP
 #define DA_INIT_CAP 256
@@ -244,6 +245,10 @@ String_View sv_chop_while(String_View *sv, String_View_Predicate predicate)
 
 bool sv_is_alpha(const char c) {
     return (bool) isalpha((int) c);
+}
+
+bool sv_is_whitespace(const char c) {
+    return (bool) isspace((int) c);
 }
 
 #endif // HLC_IMPLEMENTATION
